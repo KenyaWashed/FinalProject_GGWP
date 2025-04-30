@@ -1,0 +1,15 @@
+cn
+ml
+en
+es
+fr
+ta
+ru
+de
+it
+no
+zh
+hi
+ko
+ja
+sv
