@@ -86,7 +86,11 @@ with tab2:
     original_df = pd.read_csv("data/processed_movies.csv")
     similarity_df = pd.read_csv("data/similarity.csv")
 
+    similarity_df.set_index('id', inplace=True)
+    original_df.set_index('id', inplace=True)
+    
     if st.button("🔍 Xem gợi ý cải thiện"):
+        runtime_original = np.expm1(runtime_norm)
         recommendation = get_recommendation(
             original_df=original_df,
             similarity_df=similarity_df,
@@ -94,7 +98,7 @@ with tab2:
             input_language=language,
             input_genres=genres_input,
             input_keywords=keywords_input,
-            input_runtime=runtime_norm,
+            input_runtime=runtime_original,
             input_companies=companies_input,
             input_credits=credits_input,
         )

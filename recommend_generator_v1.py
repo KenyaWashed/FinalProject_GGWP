@@ -1,6 +1,7 @@
 from multiprocessing import dummy
 import pandas as pd
 import joblib
+import random
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from collections import Counter
@@ -111,7 +112,7 @@ def recommend_changes(original_df, top_n_indices, input_runtime, input_companies
     dummy[0, 3] = recommended_runtime
     recommended_runtime = scaler.inverse_transform(dummy)[0][3]
     
-    input_runtime = scaler.inverse_transform(np.array([[0, 0, 0, input_runtime, 0, 0]]))[0][3]
+    
     
     if input_runtime > recommended_runtime + 20:
         runtime_suggestion = f"Runtime của bạn hơi cao ({int(input_runtime)} phút). Nên giảm xuống khoảng {int(recommended_runtime)} phút."
@@ -119,7 +120,7 @@ def recommend_changes(original_df, top_n_indices, input_runtime, input_companies
         runtime_suggestion = f"Runtime của bạn hơi thấp ({int(input_runtime)} phút). Nên tăng lên khoảng {int(recommended_runtime)} phút."
     else:
         needed_change -= 1
-        runtime_suggestion = f'No need for change. Median runtime: {recommended_runtime}'
+        runtime_suggestion = f'Runtime của bạn đã ổn.'
 
     # ===== Production Companies =====
     all_companies = []
@@ -128,8 +129,10 @@ def recommend_changes(original_df, top_n_indices, input_runtime, input_companies
             all_companies.extend(companies_str.split('-'))
     company_counter = Counter(all_companies)
     most_common_companies = [company for company, _ in company_counter.most_common()]
-    recommended_companies = [c for c in most_common_companies if c not in input_companies][:2]
-
+    recommended_companies = random.sample(
+    [c for c in most_common_companies if c not in input_companies][:10], 
+    k=min(3, len([c for c in most_common_companies if c not in input_companies][:10]))
+)
     if recommended_companies:
         company_suggestion = f"Cân nhắc hợp tác với các hãng sản xuất sau: {', '.join(recommended_companies)}."
     else:
@@ -143,7 +146,8 @@ def recommend_changes(original_df, top_n_indices, input_runtime, input_companies
             all_actors.extend(credits_str.split('-'))
     actor_counter = Counter(all_actors)
     most_common_actors = [actor for actor, _ in actor_counter.most_common()]
-    recommended_actors = [a for a in most_common_actors if a not in input_credits][:3]
+    recommended_actors = random.sample([a for a in most_common_actors if a not in input_credits][:10], 
+    k=min(3, len([a for a in most_common_actors if a not in input_credits][:10])))
 
     if recommended_actors:
         actor_suggestion = f"Có thể mời các diễn viên nổi bật như: {', '.join(recommended_actors)}."
