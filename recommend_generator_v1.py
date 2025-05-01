@@ -1,3 +1,4 @@
+from multiprocessing import dummy
 import pandas as pd
 import joblib
 import numpy as np
@@ -104,10 +105,18 @@ def recommend_changes(original_df, top_n_indices, input_runtime, input_companies
     # ===== Runtime =====
     recommended_runtime = top_n_movies['runtime'].median()
     
-    if input_runtime > recommended_runtime + 0.2:
-        runtime_suggestion = f"Runtime của bạn hơi cao ({input_runtime} phút). Nên giảm xuống khoảng {recommended_runtime} phút."
-    elif input_runtime < recommended_runtime - 0.2:
-        runtime_suggestion = f"Runtime của bạn hơi thấp ({input_runtime} phút). Nên tăng lên khoảng {recommended_runtime} phút."
+    # Turn the runtime back into original scale
+    scaler = joblib.load('assets/runtime_scaler.pkl')
+    dummy = np.zeros((1, 6))
+    dummy[0, 3] = recommended_runtime
+    recommended_runtime = scaler.inverse_transform(dummy)[0][3]
+    
+    input_runtime = scaler.inverse_transform(np.array([[0, 0, 0, input_runtime, 0, 0]]))[0][3]
+    
+    if input_runtime > recommended_runtime + 20:
+        runtime_suggestion = f"Runtime của bạn hơi cao ({int(input_runtime)} phút). Nên giảm xuống khoảng {int(recommended_runtime)} phút."
+    elif input_runtime < recommended_runtime - 20:
+        runtime_suggestion = f"Runtime của bạn hơi thấp ({int(input_runtime)} phút). Nên tăng lên khoảng {int(recommended_runtime)} phút."
     else:
         needed_change -= 1
         runtime_suggestion = f'No need for change. Median runtime: {recommended_runtime}'
