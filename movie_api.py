@@ -4,26 +4,149 @@ import numpy as np
 import pickle
 from recommend_generator_v1 import get_recommendation
 
-# === Load mô hình và dữ liệu ===
-model = pickle.load(open('rfr_best_model.pkl', 'rb'))
+st.set_page_config(layout="wide")
 
-# Nếu cần, load thêm original_df và similarity_df ở đây
-# original_df = pd.read_csv("preprocessed_movies.csv")
-# similarity_df = pd.read_csv("similarity.csv")
+# === Thanh menu ngang tùy chỉnh ===
+st.markdown("""
+    <style>
+        .stApp {
+            background-image: url('https://pickamovieforme.b-cdn.net/wp-content/uploads/2020/06/bg-tablet2.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+        
+        /* Custom navbar styling */
+        .custom-navbar {
+            height: 65px;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            background-color: transparent; /* Bỏ background */
+        }
+        
+        .custom-navbar .menu-left {
+            display: flex;
+            align-items: center;
+        }
+        
+        .custom-navbar .menu-right {
+            display: flex;
+            margin-left: auto;
+            align-items: center;
+        }
+        
+        .custom-navbar a {
+            color: white;
+            text-decoration: none;
+            margin-right: 40px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .custom-navbar a:hover {
+            color: #ff4b4b;
+        }
+        
+        /* Make text more visible */
+        h1, h2, h3, p, label {
+            color: white !important;
+            text-shadow: 1px 1px 3px black;
+            font-weight: bold !important;
+        }
+        
+        /* Style for the title */
+        .title-section {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        /* Style for the inputs */
+        .stTextInput, .stSelectbox, .stSlider, .stNumberInput {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+        
+        /* Style for tabs */
+        .stTabs [data-baseweb="tab-list"] {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 10px 10px 0 0;
+        }
+        
+        .stTabs [data-baseweb="tab"] {
+            color: white;
+            font-weight: bold;
+        }
+        
+        /* Style for tab content */
+        .stTabs [data-baseweb="tab-panel"] {
+            background-color: rgba(0, 0, 0, 0.7);
+            border-radius: 0 0 10px 10px;
+            padding: 20px;
+        }
+        
+        /* Style for buttons */
+        .stButton > button {
+            background-color: #ff4b4b;
+            color: white;
+            font-weight: bold;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+        
+        .stButton > button:hover {
+            background-color: #ff2a2a;
+        }
+    </style>
+
+    <div class="custom-navbar">
+        <div class="menu-left">
+            <img src="https://cdn-icons-png.flaticon.com/256/9054/9054897.png" alt="logo" style="height: 50px; margin-right: 20px;">
+        </div>
+        <div class="menu-right">
+            <a href="#">MOVIE PICKER</a>
+            <a href="#">TOP GENRES</a>
+            <a href="#">TOP ACTORS</a>
+            <a href="#">BLOG</a>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
+
+# === Nội dung bên dưới ===
+st.markdown('<div class="title-section">', unsafe_allow_html=True)
+st.title("🎬 Movie Revenue Predictor")
+st.markdown('</div>', unsafe_allow_html=True)
+
+# === Load mô hình và dữ liệu ===
+model_path = 'prediction_model/et_best_model.pkl'
+model = pickle.load(open(model_path, 'rb'))
+
 
 # === Giao diện 2 tab ===
 tab1, tab2 = st.tabs(["📈 Dự đoán doanh thu", "💡 Gợi ý cải thiện"])
 
 # === Tab 1: Dự đoán doanh thu ===
 with tab1:
-    st.title("🎬 Feature Sugestion")
+    st.markdown('<div class="main-content">', unsafe_allow_html=True)
+    st.header("📊 Nhập thông tin để dự đoán doanh thu phim")
 
     title = st.text_input("Tên phim", "Example Movie Title")
-    genre = st.selectbox("Thể loại", ['Action', 'Comedy', 'Drama', 'Horror', 'Romance', 'Sci-Fi'])
-    production_company = st.text_input("Hãng sản xuất", "Example Production Company")
+    genre = st.selectbox(
+        "Thể loại", ['Action', 'Comedy', 'Drama', 'Horror', 'Romance', 'Sci-Fi'])
+    production_company = st.text_input(
+        "Hãng sản xuất", "Example Production Company")
     language = st.selectbox("Ngôn ngữ gốc", ['en', 'fr', 'es', 'zh', 'hi'])
     runtime = st.slider("Thời lượng phim (phút)", 60, 240, 120)
-    budget = st.number_input("Ngân sách (USD)", min_value=10000, max_value=500_000_000, value=50_000_000, step=1_000_000)
+    budget = st.number_input("Ngân sách (USD)", min_value=10000,
+                             max_value=500_000_000, value=50_000_000, step=1_000_000)
 
     # === Tạo input vector ===
     feature_names = model.feature_names_in_
@@ -33,10 +156,12 @@ with tab1:
     data['log_runtime_processed'] = np.log1p(runtime)
     data['log_budget_processed'] = np.log1p(budget)
 
-    top_studios = ['Warner Bros.', 'Universal Pictures', 'Walt Disney Pictures', '20th Century Fox', 'Paramount Pictures']
+    top_studios = ['Warner Bros.', 'Universal Pictures',
+                   'Walt Disney Pictures', '20th Century Fox', 'Paramount Pictures']
     data['topStudio'] = 1 if production_company in top_studios else 0
 
-    top_genre_dict = {'Action': 1, 'Comedy': 2, 'Drama': 3, 'Horror': 4, 'Romance': 5, 'Sci-Fi': 6}
+    top_genre_dict = {'Action': 1, 'Comedy': 2,
+                      'Drama': 3, 'Horror': 4, 'Romance': 5, 'Sci-Fi': 6}
     genre_rank = top_genre_dict.get(genre, 10)
     data['log_genre_rank'] = np.log1p(genre_rank)
     data['log_genres_no'] = np.log1p(1)
@@ -66,31 +191,27 @@ with tab1:
     if st.button("🎯 Dự đoán doanh thu"):
         log_revenue = model.predict(data)
         revenue = np.expm1(log_revenue)
-        st.success(f"💰 Dự đoán doanh thu: **${revenue[0]:,.2f} USD**")
+        st.markdown(f'<div style="background-color: rgba(25, 135, 84, 0.7); padding: 15px; border-radius: 5px; margin-top: 20px;"><h3 style="color: white; margin: 0;">💰 Dự đoán doanh thu: <b>${revenue[0]:,.2f} USD</b></h3></div>', unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)
 
 # === Tab 2: Gợi ý cải thiện ===
 with tab2:
-    st.title("💡 Gợi ý cải thiện phim")
-
-    st.info("Nhập thông tin để nhận các gợi ý tối ưu hoá cho phim")
+    st.markdown('<div class="main-content">', unsafe_allow_html=True)
+    st.header("💡 Gợi ý cải thiện phim")
+    st.markdown('<div style="background-color: rgba(13, 110, 253, 0.7); padding: 15px; border-radius: 5px; margin-bottom: 20px;"><p style="color: white; margin: 0;">Nhập thông tin để nhận các gợi ý tối ưu hoá cho phim</p></div>', unsafe_allow_html=True)
 
     budget_norm = np.log1p(budget)
     runtime_norm = np.log1p(runtime)
     genres_input = [genre]
-    keywords_input = []  # Nếu có thể nhập từ người dùng thì thêm vào
+    keywords_input = []
     companies_input = [production_company]
-    credits_input = []  # Nếu có tên diễn viên thì thêm vào
+    credits_input = []
 
-    # Dummy DataFrame placeholder (nếu chưa load được file thật)
-    import pandas as pd
     original_df = pd.read_csv("data/processed_movies.csv")
     similarity_df = pd.read_csv("data/similarity.csv")
 
-    similarity_df.set_index('id', inplace=True)
-    original_df.set_index('id', inplace=True)
-    
     if st.button("🔍 Xem gợi ý cải thiện"):
-        runtime_original = np.expm1(runtime_norm)
         recommendation = get_recommendation(
             original_df=original_df,
             similarity_df=similarity_df,
@@ -98,17 +219,26 @@ with tab2:
             input_language=language,
             input_genres=genres_input,
             input_keywords=keywords_input,
-            input_runtime=runtime_original,
+            input_runtime=runtime_norm,
             input_companies=companies_input,
             input_credits=credits_input,
         )
 
         if recommendation['needed_change'] == 0:
-            st.success("✅ Phim của bạn đã tối ưu. Không cần thay đổi thêm.")
+            st.markdown('<div style="background-color: rgba(25, 135, 84, 0.7); padding: 15px; border-radius: 5px; margin-top: 20px;"><p style="color: white; margin: 0;">✅ Phim của bạn đã tối ưu. Không cần thay đổi thêm.</p></div>', unsafe_allow_html=True)
         else:
+            suggestion_html = '<div style="background-color: rgba(255, 193, 7, 0.7); padding: 15px; border-radius: 5px; margin-top: 20px;">'
+            
             if 'runtime_suggestion' in recommendation:
-                st.warning("⏱ " + recommendation['runtime_suggestion'])
+                suggestion_html += f'<p style="color: white; margin-bottom: 10px;">⏱ {recommendation["runtime_suggestion"]}</p>'  
+            
             if 'company_suggestion' in recommendation:
-                st.info("🏢 " + recommendation['company_suggestion'])
+                suggestion_html += f'<p style="color: white; margin-bottom: 10px;">🏢 {recommendation["company_suggestion"]}</p>'  
+            
             if 'actor_suggestion' in recommendation:
-                st.info("🎭 " + recommendation['actor_suggestion'])
+                suggestion_html += f'<p style="color: white; margin-bottom: 0px;">🎭 {recommendation["actor_suggestion"]}</p>'  
+            
+            suggestion_html += '</div>'
+            st.markdown(suggestion_html, unsafe_allow_html=True)
+    
+    st.markdown('</div>', unsafe_allow_html=True)

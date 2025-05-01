@@ -8,11 +8,9 @@ def split_csv(file_path, rows_per_file=1000):
     rows_per_file: số dòng tối đa cho mỗi file (không tính header)
     """
     base_dir = os.path.dirname(os.path.abspath(__file__))  # thư mục hiện tại
+    
     full_path = os.path.join(base_dir, file_path)
 
-    if not os.path.exists(full_path):
-        print(f"❌ File '{file_path}' không tồn tại.")
-        return
 
     file_base_name = os.path.splitext(file_path)[0]
 
