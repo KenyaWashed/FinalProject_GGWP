@@ -1,7 +1,7 @@
 # [Phân tích dữ liệu thông minh] FinalProject
-# 🎬 Movie Success Prediction Project
+# Movie Success Prediction Project
 
-## 📌 Project Overview
+## Project Overview
 
 This project, **"Movie Success Prediction"**, was developed as a final assignment for the course *Intelligent Data Analysis* at the University of Science. The project applies machine learning techniques to analyze and forecast the commercial potential and audience appeal of movies.
 
@@ -9,7 +9,7 @@ As the film industry becomes increasingly competitive, production companies and 
 
 ---
 
-## 🎯 Objectives
+## Objectives
 
 - Build regression models to predict a movie’s **revenue** and **popularity**.
 - Identify and analyze key factors influencing film success.
@@ -18,7 +18,7 @@ As the film industry becomes increasingly competitive, production companies and 
 
 ---
 
-## 📊 Dataset
+## Dataset
 
 - Source: [Millions of Movies - Kaggle](https://www.kaggle.com/datasets/erdemaydin/millions-of-movies)
 - Records: 884,422 movies
@@ -27,28 +27,26 @@ As the film industry becomes increasingly competitive, production companies and 
 
 ---
 
-## 🧪 Methodology
+## Methodology
 
-### 📌 Preprocessing
+### Preprocessing
 
 - Removed missing, zero, and outlier values
 - Extracted and encoded relevant features (e.g., log-transformation, label encoding, datetime processing)
 - Created derived features (e.g., genre rank, runtime ratio)
 
-### 🤖 Machine Learning Models
+### Machine Learning Models
 
 - **Random Forest Regressor**
 - **Gradient Boosting Regressor**
 - **CatBoost Regressor**
 
-### 🧠 Model Evaluation
+### Model Evaluation
 
-- Metrics: R², MAE, RMSE
-- Achieved:
-  - **R² ~ 0.82** for revenue prediction
-  - **R² ~ 0.78** for popularity prediction
+- Metrics: Accuracy, R², MAE, RMSE
 
-### 🔍 Feature Importance
+
+### Feature Importance
 
 - Used **SHAP (SHapley Additive exPlanations)** to interpret model predictions and assess feature contributions.
 
@@ -63,7 +61,7 @@ A Streamlit-based web app was developed with two main functionalities:
 
 ---
 
-## 🚀 Future Work
+## Future Work
 
 - Integrate additional data sources, especially from streaming platforms (e.g., Netflix, Prime).
 - Expand the recommendation system to include actor/crew suggestions based on collaborative filtering.
@@ -71,7 +69,7 @@ A Streamlit-based web app was developed with two main functionalities:
 
 ---
 
-## 👨‍💻 Team Information – GGWP
+## Team Information – Team name: GGWP
 
 | Student ID | Full Name              | Role         |
 |------------|------------------------|--------------|
