@@ -52,7 +52,7 @@ As the film industry becomes increasingly competitive, production companies and 
 
 ---
 
-## 🌐 Web Application
+## Web Application
 
 A Streamlit-based web app was developed with two main functionalities:
 
